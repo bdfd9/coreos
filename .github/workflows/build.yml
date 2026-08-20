@@ -1,0 +1,235 @@
+---
+name: Build container image
+on:
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: "05 10 * * *" # 10:05am UTC everyday
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**/README.md"
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: "${{ github.event.repository.name }}"
+  IMAGE_DESC: "My Customized Universal Blue Image"
+  IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
+  FEDORA_VERSION: "44"
+  DEFAULT_TAG: "latest"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-${{ inputs.brand_name}}-${{ inputs.stream_name }}
+  cancel-in-progress: true
+
+jobs:
+  build_push:
+    name: Build and push image
+    timeout-minutes: 120
+
+    strategy:
+      fail-fast: false
+      matrix:
+        flavor: [""]
+
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Show disk space
+        run: sudo df -h
+
+      - name: Change image name depending on build flavor
+        env:
+          BUILD_FLAVOR: ${{ matrix.flavor }}
+        run: |
+          if [ "${BUILD_FLAVOR}" != "" ] ; then
+            echo "IMAGE_NAME=${IMAGE_NAME}-${{ matrix.flavor }}" >> $GITHUB_ENV
+          fi
+
+      - name: Lower case image variables
+        run: |
+          echo "IMAGE_REGISTRY=${IMAGE_REGISTRY,,}" >> ${GITHUB_ENV}
+          echo "IMAGE_NAME=${IMAGE_NAME,,}" >> ${GITHUB_ENV}
+
+      - name: Set tag prefix
+        if: github.ref_name != 'master'
+        run: |
+          echo "TAG_PREFIX=${{ github.ref_name }}." >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
+
+      - name: Maximize build space
+        uses: ublue-os/remove-unwanted-software@cc0becac701cf642c8f0a6613bbdaf5dc36b259e # v9
+        with:
+          remove-codeql: true
+
+      - name: Check if /mnt is there
+        id: check_mnt
+        run: |
+          if sudo mountpoint /mnt; then
+            echo "mnt_is_there=1" >>$GITHUB_OUTPUT
+          else
+            echo "mnt_is_there=0" >>$GITHUB_OUTPUT
+          fi
+
+      - name: Free Disk Space (Ubuntu)
+        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+
+      - name: Mount BTRFS for podman storage
+        uses: ublue-os/container-storage-action@main
+        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
+        with:
+          target-dir: /var/lib/containers
+
+      # - name: Mount BTRFS for podman storage
+      #   id: container-storage-action
+      #   uses: ublue-os/container-storage-action@main
+      #   continue-on-error: true
+      #   with:
+      #     target-dir: /var/lib/containers
+      #     mount-opts: compress-force=zstd:2
+
+      - name: Get current date
+        id: date
+        run: |
+          echo "date=$(date -u +%Y\-%m\-%d\T%H\:%M\:%S\Z)" >> $GITHUB_OUTPUT
+
+      - name: Image Metadata
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        id: metadata
+        with:
+          tags: |
+            type=raw,value=${{ env.TAG_PREFIX }}{{date 'YYYYMMDD'}}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.DEFAULT_TAG }}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}
+            type=raw,value=${{ env.TAG_PREFIX }}${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
+            type=sha,enable=${{ github.event_name == 'pull_request' }}
+            type=ref,event=pr
+          labels: |
+            org.opencontainers.image.created=${{ steps.date.outputs.date }}
+            org.opencontainers.image.description=${{ env.IMAGE_DESC }}
+            org.opencontainers.image.documentation=https://raw.githubusercontent.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/${{ github.sha }}/README.md
+            org.opencontainers.image.source=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/blob/${{ github.sha }}/Containerfile
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}/tree/${{ github.sha }}
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
+            org.opencontainers.image.version=${{ env.FEDORA_VERSION }}.{{date 'YYYYMMDD'}}
+            containers.bootc=1
+          sep-tags: " "
+          sep-annotations: " "
+
+      - name: Check secure boot key
+        id: secret-check
+        run: |
+          if [ -z "${{ secrets.SECUREBOOT_KEY }}" ]; then
+            echo "present=false" >> $GITHUB_OUTPUT
+          else
+            echo "present=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Decode Secure Boot keys
+        if: steps.secret-check.outputs.present == 'true'
+        run: |
+          ls -lha
+          echo "$SECUREBOOT_KEY" > system_files/base/secureboot/MOK.key
+          chmod 600 system_files/base/secureboot/MOK.key
+        env:
+          SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
+
+      - name: Prepare build args file
+        run: |
+          cat <<'EOF' >>build_args.txt
+          FEDORA_VERSION=${{ env.FEDORA_VERSION }}
+          IMAGE=${{ env.IMAGE_NAME }}
+          EOF
+
+      # - name: Build Image
+      #   id: build_image
+      #   run: |
+      #     sudo -E buildah build \
+      #       --file Containerfile \
+      #       --build-arg-file build_args.txt \
+      #       --tag raw-img .
+
+      - name: Build Image
+        id: build_image
+        uses: redhat-actions/buildah-build@7a95fa7ee0f02d552a32753e7414641a04307056 # v2
+        with:
+          containerfiles: ./Containerfile
+          build-args: |
+            FEDORA_VERSION=${{ env.FEDORA_VERSION }}
+            KERNEL_FLAVOR=longterm
+          # Postfix image name with -custom to make it a little more descriptive
+          # Syntax: https://docs.github.com/en/actions/learn-github-actions/expressions#format
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
+          oci: false
+
+      # - name: Run Rechunker
+      #   id: rechunk
+      #   uses: ublue-os/legacy-rechunk@a925083d9af7cb04b3e2a6e8c01bfa495f38b710 # v1.0.0
+      #   with:
+      #     rechunk: "ghcr.io/ublue-os/legacy-rechunk:v1.0.0-x86_64"
+      #     ref: "raw-img"
+      #     prev-ref: "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.DEFAULT_TAG }}"
+      #     skip_compression: false
+      #     version: "${{ steps.metadata.outputs.tags }}"
+      #     labels: "${{ steps.metadata.outputs.labels }}"
+
+      # - name: Load in podman and tag
+      #   run: |
+      #     IMAGE=$(podman pull ${{ steps.rechunk.outputs.ref }})
+      #     sudo rm -rf ${{ steps.rechunk.outputs.output }}
+      #     for tag in ${{ steps.metadata.outputs.tags }}; do
+      #       podman tag $IMAGE "${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:$tag"
+      #     done
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
+        if: github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push To GHCR
+        uses: redhat-actions/push-to-registry@5ed88d269cf581ea9ef6dd6806d01562096bee9c # v2
+        if: github.event_name != 'pull_request' && github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+        id: push
+        env:
+          REGISTRY_USER: ${{ github.actor }}
+          REGISTRY_PASSWORD: ${{ github.token }}
+        with:
+          registry: ${{ env.IMAGE_REGISTRY }}
+          image: ${{ env.IMAGE_NAME }}
+          tags: ${{ steps.metadata.outputs.tags }}
+          username: ${{ env.REGISTRY_USER }}
+          password: ${{ env.REGISTRY_PASSWORD }}
+
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6
+        if: github.event_name != 'pull_request'
+        with:
+          cosign-release: "v2.6.1"
+
+      - name: Sign container image
+        if: github.event_name != 'pull_request'
+        run: |
+          IMAGE_FULL="${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}"
+          for tag in ${{ steps.metadata.outputs.tags }}; do
+            cosign sign -y --key env://COSIGN_PRIVATE_KEY $IMAGE_FULL:$tag
+          done
+        env:
+          TAGS: ${{ steps.push.outputs.digest }}
+          COSIGN_EXPERIMENTAL: false
+          COSIGN_PRIVATE_KEY: ${{ secrets.SIGNING_SECRET }}
