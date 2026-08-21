@@ -19,7 +19,7 @@ env:
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   FEDORA_VERSION: "44"
   KERNEL_FLAVOR: "coreos-stable"
-  DEFAULT_TAG: "latest"
+  DEFAULT_TAG: "stable"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref || github.run_id }}-${{ inputs.brand_name}}-${{ inputs.stream_name }}
@@ -63,6 +63,12 @@ jobs:
         if: github.ref_name != 'master'
         run: |
           echo "TAG_PREFIX=${{ github.ref_name }}." >> $GITHUB_ENV
+
+      - name: Fetch current CoreOS version
+        run: |
+          version=$(skopeo inspect "docker://quay.io/fedora/fedora-coreos:stable" | jq -r '.["Labels"]["org.opencontainers.image.version"]')
+          fedora=${version%%.*}
+          echo "FEDORA_VERSION=$fedora" >> $GITHUB_ENV
 
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v6
@@ -145,26 +151,6 @@ jobs:
           chmod 600 system_files/base/secureboot/MOK.key
         env:
           SECUREBOOT_KEY: ${{ secrets.SECUREBOOT_KEY }}
-
-      - name: Prepare build args file
-        run: |
-          version=$skopeo inspect "docker://quay.io/fedora/fedora-coreos:stable" | jq -r '.["Labels"]["org.opencontainers.image.version"]')
-          fedora=${version%%.*}
-          echo "FEDORA_VERSION=$fedora" >> $GITHUB_ENV
-
-          # cat <<'EOF' >>build_args.txt
-          # FEDORA_VERSION=$version
-          # KERNEL_FLAVOR=${{ env.KERNEL_FLAVOR }}
-          # IMAGE=${{ env.IMAGE_NAME }}
-          # EOF
-
-      # - name: Build Image
-      #   id: build_image
-      #   run: |
-      #     sudo -E buildah build \
-      #       --file Containerfile \
-      #       --build-arg-file build_args.txt \
-      #       --tag raw-img .
 
       - name: Build Image
         id: build_image
