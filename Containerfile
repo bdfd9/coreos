@@ -3,8 +3,9 @@ ARG IMAGE_NAME="fedora-coreos"
 ARG FEDORA_VERSION="44"
 ARG BASE_IMAGE="quay.io/fedora/${IMAGE_NAME}"
 # longterm-X.XX or coreos-stable
-ARG KERNEL_FLAVOR="longterm-6.18"
+ARG KERNEL_FLAVOR="coreos-stable"
 ARG AKMODS_TAG="${KERNEL_FLAVOR}-${FEDORA_VERSION}"
+
 FROM ghcr.io/ublue-os/akmods-zfs:${AKMODS_TAG} AS akmods-zfs
 
 FROM scratch AS ctx
