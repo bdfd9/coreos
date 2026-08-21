@@ -148,11 +148,15 @@ jobs:
 
       - name: Prepare build args file
         run: |
-          cat <<'EOF' >>build_args.txt
-          FEDORA_VERSION=${{ env.FEDORA_VERSION }}
-          KERNEL_FLAVOR=${{ env.KERNEL_FLAVOR }}
-          IMAGE=${{ env.IMAGE_NAME }}
-          EOF
+          version=$skopeo inspect "docker://quay.io/fedora/fedora-coreos:stable" | jq -r '.["Labels"]["org.opencontainers.image.version"]')
+          fedora=${version%%.*}
+          echo "FEDORA_VERSION=$fedora" >> $GITHUB_ENV
+
+          # cat <<'EOF' >>build_args.txt
+          # FEDORA_VERSION=$version
+          # KERNEL_FLAVOR=${{ env.KERNEL_FLAVOR }}
+          # IMAGE=${{ env.IMAGE_NAME }}
+          # EOF
 
       # - name: Build Image
       #   id: build_image

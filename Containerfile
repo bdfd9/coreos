@@ -1,6 +1,7 @@
 # Allow build scripts to be referenced without being copied into the final image
 ARG IMAGE_NAME="fedora-coreos"
 ARG FEDORA_VERSION="44"
+ARG FEDORA_TAG="stable"
 ARG BASE_IMAGE="quay.io/fedora/${IMAGE_NAME}"
 # longterm-X.XX or coreos-stable
 ARG KERNEL_FLAVOR="coreos-stable"
@@ -12,7 +13,7 @@ FROM scratch AS ctx
 COPY / /
 COPY system_files/ /system_files
 
-FROM ${BASE_IMAGE}:${FEDORA_VERSION} AS base
+FROM ${BASE_IMAGE}:${FEDORA_TAG} AS base
 
 COPY system_files/base /
 
