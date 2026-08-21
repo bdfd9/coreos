@@ -8,7 +8,8 @@ dnf5 -y install \
     https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
     https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
 
-dnf5 config-manager setopt fedora-cisco-openh264.enabled=1
+# dnf5 config-manager setopt fedora-cisco-openh264.enabled=1
+dnf5 repo-config fedora-cisco-openh264 set enabled=1
 
 dnf5 config-manager addrepo --from-repofile=https://pkgs.tailscale.com/stable/fedora/tailscale.repo
 
