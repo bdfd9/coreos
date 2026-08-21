@@ -18,7 +18,8 @@ env:
   IMAGE_DESC: "My Customized Fedora CoreOS"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   FEDORA_VERSION: "44"
-  KERNEL_FLAVOR: "coreos-stable"
+  # KERNEL_FLAVOR: "coreos-stable"
+  KERNEL_FLAVOR: "longterm-6.18"
   DEFAULT_TAG: "stable"
 
 concurrency:
