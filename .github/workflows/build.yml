@@ -15,9 +15,10 @@ on:
 
 env:
   IMAGE_NAME: "${{ github.event.repository.name }}"
-  IMAGE_DESC: "My Customized Universal Blue Image"
+  IMAGE_DESC: "My Customized Fedora CoreOS"
   IMAGE_REGISTRY: "ghcr.io/${{ github.repository_owner }}"
   FEDORA_VERSION: "44"
+  KERNEL_FLAVOR: "coreos-stable"
   DEFAULT_TAG: "latest"
 
 concurrency:
@@ -149,6 +150,7 @@ jobs:
         run: |
           cat <<'EOF' >>build_args.txt
           FEDORA_VERSION=${{ env.FEDORA_VERSION }}
+          KERNEL_FLAVOR=${{ env.KERNEL_FLAVOR }}
           IMAGE=${{ env.IMAGE_NAME }}
           EOF
 
@@ -167,7 +169,7 @@ jobs:
           containerfiles: ./Containerfile
           build-args: |
             FEDORA_VERSION=${{ env.FEDORA_VERSION }}
-            KERNEL_FLAVOR=longterm
+            KERNEL_FLAVOR=${{ env.KERNEL_FLAVOR }}
           # Postfix image name with -custom to make it a little more descriptive
           # Syntax: https://docs.github.com/en/actions/learn-github-actions/expressions#format
           image: ${{ env.IMAGE_NAME }}
