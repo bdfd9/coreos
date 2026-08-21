@@ -12,7 +12,8 @@ export DRACUT_NO_XATTR=1
   --no-hostonly \
   --kver "$KVER" \
   --reproducible \
-  --zstd -v \
+  --xz \
+  --verbose \
   --add ostree --add fido2 \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
