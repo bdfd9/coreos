@@ -16,7 +16,9 @@ packages=(
     cockpit-networkmanager
     cockpit-podman
     cockpit-selinux
+    cockpit-storaged
     cockpit-system
+    cockpit-ostree
 
     # Audio / Firmware
     atheros-firmware
@@ -38,14 +40,7 @@ packages=(
     systemd-container
 
     # Network / Connectivity
-    gvfs-archive
-    gvfs-mtp
-    gvfs-nfs
-    gvfs-smb
     iftop
-    ifuse
-    jmtpfs
-    mobile-broadband-provider-info
     net-tools
     NetworkManager
     NetworkManager-adsl
@@ -70,16 +65,13 @@ packages=(
     audispd-plugins
     audit
     firewalld
-    fprintd
-    fprintd-pam
     git-credential-libsecret
     ksshaskpass
     pam_yubico
-    pcsc-lite
     yubikey-manager
 
     # Performance
-    ksmtuned
+
     # power-profiles-daemon
     thermald
 
@@ -132,7 +124,6 @@ packages=(
     whois
     xdg-terminal-exec
     xdg-user-dirs
-    xhost
     zstd
 
     # Fonts
