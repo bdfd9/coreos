@@ -20,12 +20,6 @@ pushd /tmp/rpms/kernel
 KERNEL_VERSION=$(find "$KERNEL_NAME"-*.rpm | grep -P "$KERNEL_NAME-(\d+\.\d+\.\d+)-.*\.fc${RELEASE}\.${ARCH}" | sed -E "s/$KERNEL_NAME-//" | sed -E 's/\.rpm//')
 popd
 
-# mitigate problem on F43 where during kernel install, dracut errors and fails
-# create a shim to bypass all of kernel-install... maybe not safe?
-#mv /usr/sbin/kernel-install /usr/sbin/kernel-install.bak
-#printf '%s\n' '#!/bin/sh' 'exit 0' > /usr/sbin/kernel-install
-#mv -f /usr/sbin/kernel-install.bak /usr/sbin/kernel-install
-#
 # create a shim to bypass kernel install triggering dracut/rpm-ostree
 # seems to be minimal impact, but allows progress on build
 # NOTE: these shims are left in place permanently to support downstream
