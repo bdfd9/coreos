@@ -11,8 +11,8 @@ depends() {
 install() {
     inst dropbear
 
-    inst_simple "$moddir/prepare-dropbear-keys.service" "$systemdsystemunitdir/dropbear-prepare-keys.service"
-    inst_simple "$moddir/prepare-dropbear-keys" "/usr/sbin/dropbear-prepare-keys"
+    inst_simple "$moddir/dropbear-prepare-keys.service" "$systemdsystemunitdir/dropbear-prepare-keys.service"
+    inst_simple "$moddir/dropbear-prepare-keys" "/usr/sbin/dropbear-prepare-keys"
 
     inst_simple "$moddir/dropbear-ssh.service" "$systemdsystemunitdir/dropbear-ssh.service"
     inst_simple "$moddir/dropbear-ssh" "/usr/sbin/dropbear-ssh"
