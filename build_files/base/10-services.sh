@@ -24,6 +24,10 @@ mask_services=(
     NetworkManager-wait-online.service
 )
 
+disable_services=(
+    zincati.service
+)
+
 systemctl enable "${system_services[@]}"
 systemctl mask "${mask_services[@]}"
 systemctl --global enable "${user_services[@]}"
@@ -33,6 +37,10 @@ touch "$preset_file"
 
 for service in "${system_services[@]}"; do
     echo "enable $service" >> "$preset_file"
+done
+
+for service in "${disable_services[@]}"; do
+    echo "disable $service" >> "$preset_file"
 done
 
 mkdir -p "/etc/systemd/user-preset/"
