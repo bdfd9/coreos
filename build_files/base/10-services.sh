@@ -6,9 +6,10 @@ set -eoux pipefail
 
 system_services=(
     bootc-fetch-apply-updates.service
-    podman.socket
     chronyd.service
     firewalld.service
+    podman.socket
+    rpm-ostreed-automatic.timer
     systemd-resolved.service
     tailscaled.service
 )
@@ -52,5 +53,7 @@ for service in "${user_services[@]}"; do
 done
 
 systemctl --global preset-all
+
+sed -i 's/#AutomaticUpdatePolicy.*/AutomaticUpdatePolicy=stage/' /etc/rpm-ostreed.conf
 
 echo "::endgroup::"
