@@ -18,8 +18,11 @@ install() {
     inst_simple "$moddir/dropbear-ssh" "/usr/sbin/dropbear-ssh"
 
 
-    systemctl -q --root "$initdir" add-requires "dropbear-prepare-keys.service" "initrd.target" || exit 1
-    systemctl -q --root "$initdir" add-requires "dropbear-ssh.service" "initrd.target" || exit 1
+    # systemctl -q --root "$initdir" add-requires "dropbear-prepare-keys.service" "initrd.target" || exit 1
+    # systemctl -q --root "$initdir" add-requires "dropbear-ssh.service" "initrd.target" || exit 1
+
+    systemctl -q --root "$initdir" add-requires "initrd.target" "dropbear-prepare-keys.service" || exit 1
+    systemctl -q --root "$initdir" add-requires "initrd.target" "dropbear-ssh.service" || exit 1
 
     systemctl -q --root "$initdir" add-wants "dropbear-prepare-keys.service" "initrd.target" || exit 1
     systemctl -q --root "$initdir" add-wants "dropbear-ssh.service" "dropbear-prepare-keys.service" || exit 1
