@@ -1,0 +1,36 @@
+#!/bin/bash
+
+# Mount the boot partition (FCOS labels the boot partition as 'boot')
+mkdir -p /mnt/boot
+mount -L boot /mnt/boot
+
+# Setup directories
+mkdir -p /mnt/boot/dropbear
+mkdir -p /etc/dropbear
+mkdir -p /root/.ssh
+
+if [[ ! -f /mnt/boot/dropbear/dropbear_ecdsa_host_key ]]; then
+    echo "Generating new Dropbear ecdsa host key..."
+    dropbearkey -t ecdsa -f /mnt/boot/dropbear/dropbear_ecdsa_host_key
+fi
+
+if [[ ! -f /mnt/boot/dropbear/dropbear_ed25519_host_key ]]; then
+    echo "Generating new Dropbear ED25519 host key..."
+    dropbearkey -t ed25519 -f /mnt/boot/dropbear/dropbear_ed25519_host_key
+fi
+
+if [[ ! -f /mnt/boot/dropbear/dropbear_rsa_host_key ]]; then
+    echo "Generating new Dropbear ecdsa host key..."
+    dropbearkey -t rsa -f /mnt/boot/dropbear/dropbear_rsa_host_key
+fi
+
+cp /mnt/boot/dropbear/dropbear_ecdsa_host_key /etc/dropbear/
+cp /mnt/boot/dropbear/dropbear_ed25519_host_key /etc/dropbear/
+cp /mnt/boot/dropbear/dropbear_rsa_host_key /etc/dropbear/
+
+if [ -f /mnt/boot/dropbear/authorized_keys ]; then
+    cp /mnt/boot/authorized_keys /root/.ssh/authorized_keys
+    chmod 600 /root/.ssh/authorized_keys
+fi
+
+umount /mnt/boot

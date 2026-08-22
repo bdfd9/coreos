@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -euo pipefail
+
+echo "Starting Dropbear SSH server..."
+dropbear -s -j -k -p 22

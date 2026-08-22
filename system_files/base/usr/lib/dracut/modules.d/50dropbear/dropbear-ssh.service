@@ -1,0 +1,10 @@
+[Unit]
+Description=Dropbear SSH server
+DefaultDependencies=false
+Before=initrd-root-fs.target
+Before=sysroot.mount
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/dropbear-start
+RemainAfterExit=yes

@@ -1,0 +1,16 @@
+[Unit]
+Description=Prepare Dropbear keys from /boot
+DefaultDependencies=no
+Before=dropbear-ssh.service
+Before=initrd-root-fs.target
+Before=sysroot.mount
+Requires=local-fs.target
+After=local-fs.target
+
+[Install]
+WantedBy=dropbear-ssh.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sbin/prepare-dropbear-keys.sh
+RemainAfterExit=yes
