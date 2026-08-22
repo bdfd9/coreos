@@ -1,8 +1,8 @@
 [Unit]
 Description=Dropbear SSH server
-DefaultDependencies=false
-Before=initrd-root-fs.target
-Before=sysroot.mount
+DefaultDependencies=no
+Requires=local-fs.target cryptsetup.target
+After=local-fs.target cryptsetup.target
 
 [Service]
 Type=oneshot

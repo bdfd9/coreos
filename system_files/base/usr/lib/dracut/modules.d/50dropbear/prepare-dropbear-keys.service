@@ -2,10 +2,8 @@
 Description=Prepare Dropbear keys from /boot
 DefaultDependencies=no
 Before=dropbear-ssh.service
-Before=initrd-root-fs.target
-Before=sysroot.mount
-Requires=local-fs.target
-After=local-fs.target
+Requires=local-fs.target cryptsetup.target
+After=local-fs.target cryptsetup.target
 
 [Install]
 WantedBy=dropbear-ssh.service
