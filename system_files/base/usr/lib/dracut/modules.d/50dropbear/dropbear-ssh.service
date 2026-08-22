@@ -5,6 +5,4 @@ Requires=local-fs.target cryptsetup-pre.target
 After=local-fs.target cryptsetup-pre.target
 
 [Service]
-Type=oneshot
 ExecStart=/usr/sbin/dropbear-start
-RemainAfterExit=yes
