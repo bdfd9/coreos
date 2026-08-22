@@ -7,13 +7,14 @@ set -eoux pipefail
 modules=(
     "base/01-setup-dnf.sh"
     "base/02-setup-kernel.sh"
+    # initramfs inhales a lot of stuff from installed packages.
+    "initramfs.sh"
     "base/03-install-copr-repos.sh"
     "base/04-packages.sh"
     "hw/base/packages.sh"
     "base/08-firmware.sh"
     "base/10-services.sh"
     # "sign.sh"
-    "initramfs.sh"
 )
 
 for mod in "${modules[@]}"; do
