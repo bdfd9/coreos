@@ -2,8 +2,8 @@
 Description=Prepare Dropbear keys from /boot
 DefaultDependencies=no
 Before=dropbear-ssh.service
-Requires=local-fs.target cryptsetup.target
-After=local-fs.target cryptsetup.target
+Requires=dev-disk-by\x2dlabel-boot.device
+After=dev-disk-by\x2dlabel-boot.device
 
 [Install]
 WantedBy=dropbear-ssh.service

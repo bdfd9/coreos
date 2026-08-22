@@ -1,6 +1,4 @@
 #!/bin/bash
 
-set -euo pipefail
-
-echo "Starting Dropbear SSH server..."
+echo "[dropbear]: starting dropbear SSH server..." > /dev/kmsg
 dropbear -s -j -k -p 22

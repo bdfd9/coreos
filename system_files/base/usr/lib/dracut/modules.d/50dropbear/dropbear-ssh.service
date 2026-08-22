@@ -1,8 +1,8 @@
 [Unit]
 Description=Dropbear SSH server
 DefaultDependencies=no
-Requires=local-fs.target cryptsetup.target
-After=local-fs.target cryptsetup.target
+Requires=local-fs.target cryptsetup-pre.target
+After=local-fs.target cryptsetup-pre.target
 
 [Service]
 Type=oneshot

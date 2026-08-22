@@ -1,8 +1,18 @@
 #!/bin/bash
 
+echo "[dropbear]: initialising dropbear keys..." > /dev/kmsg
+
+if [[ ! -b /dev/disk/by-label/boot ]]; then
+    echo "[dropbear]: ERROR /dev/disk/by-label/boot not found!" > /dev/kmsg
+    exit 1
+fi
+
 # Mount the boot partition (FCOS labels the boot partition as 'boot')
 mkdir -p /mnt/boot
-mount -L boot /mnt/boot
+if ! mount -L boot /mnt/boot; then
+    echo "[dropbear]: ERROR failed to mount /boot" > /dev/kmsg
+    exit 1
+fi
 
 # Setup directories
 mkdir -p /mnt/boot/dropbear
