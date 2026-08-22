@@ -100,8 +100,6 @@ packages=(
     nvme-cli
     openssl
     perf
-    plymouth
-    plymouth-system-theme
     powerstat
     powertop
     rclone
@@ -130,13 +128,10 @@ packages=(
     default-fonts
     default-fonts-core-emoji
     fira-code-fonts
-    google-noto-cjk-fonts
     google-noto-color-emoji-fonts
     google-noto-emoji-fonts
     google-noto-fonts-all
-    google-noto-sans-cjk-fonts
     liberation-fonts
-    rsms-inter-fonts
 
     # SMB
     samba
@@ -181,7 +176,6 @@ packages=(
     qemu-system-x86-core
     qemu-user-binfmt
     qemu-user-static
-    virt-manager
 )
 
 dnf5 -y install "${packages[@]}"
