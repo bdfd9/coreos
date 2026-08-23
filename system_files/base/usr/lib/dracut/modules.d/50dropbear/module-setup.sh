@@ -5,7 +5,7 @@ check() {
 }
 
 depends() {
-    echo network systemd
+    echo network systemd systemd-networkd
 }
 
 install() {
@@ -30,4 +30,6 @@ install() {
 
     inst_simple "${moddir}/motd" /etc/motd
     inst_simple "${moddir}/profile" "$initdir/root/.profile"
+
+    inst_simple "${moddir}/20-wired.network" "/etc/systemd/network/20-wired.network"
 }
