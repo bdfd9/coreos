@@ -2,56 +2,58 @@
 
 echo "[dropbear][INFO]: initialising dropbear keys..." > /dev/kmsg
 
-if [[ ! -b /dev/disk/by-label/boot ]]; then
+if [[ ! -b /dev/disk/by-label/boot-storage ]]; then
     echo "[dropbear][ERROR] /dev/disk/by-label/boot not found!" > /dev/kmsg
     exit 1
 fi
 
 # Mount the boot partition (FCOS labels the boot partition as 'boot')
-mkdir -p /mnt/boot
-if ! mount -L boot /mnt/boot; then
-    echo "[dropbear][ERROR] failed to mount /boot" > /dev/kmsg
+mkdir -p /mnt/boot-storage
+if ! mount -L boot-storage /mnt/boot-storage; then
+    echo "[dropbear][ERROR] failed to mount /mnt/boot-storage" > /dev/kmsg
     exit 1
 fi
 
 # Setup directories
-mkdir -p /mnt/boot/dropbear
+mkdir -p /mnt/boot-storage/dropbear
 mkdir -p /etc/dropbear
 mkdir -p /root/.ssh
 
-if [[ ! -f /mnt/boot/dropbear/dropbear_ecdsa_host_key ]]; then
+keys_path="/mnt/boot-storage/dropbear"
+
+if [[ ! -f "$keys_path/dropbear_ecdsa_host_key" ]]; then
     echo "[dropbear][INFO]: generating new Dropbear ecdsa host key..." > /dev/kmsg
-    dropbearkey -t ecdsa -f /mnt/boot/dropbear/dropbear_ecdsa_host_key
+    dropbearkey -t ecdsa -f "$keys_path/dropbear_ecdsa_host_key"
 else
     echo "[dropbear][INFO] found 'dropbear_ecdsa_host_key'!" > /dev/kmsg
 fi
 
-if [[ ! -f /mnt/boot/dropbear/dropbear_ed25519_host_key ]]; then
+if [[ ! -f "$keys_path/dropbear_ed25519_host_key" ]]; then
     echo "[dropbear][INFO]: generating new Dropbear ED25519 host key..." > /dev/kmsg
-    dropbearkey -t ed25519 -f /mnt/boot/dropbear/dropbear_ed25519_host_key
+    dropbearkey -t ed25519 -f "$keys_path/dropbear_ed25519_host_key"
 else
     echo "[dropbear][INFO] found 'dropbear_ed25519_host_key'!" > /dev/kmsg
 fi
 
-if [[ ! -f /mnt/boot/dropbear/dropbear_rsa_host_key ]]; then
+if [[ ! -f "$keys_path/dropbear_rsa_host_key" ]]; then
     echo "[dropbear][INFO]: generating new Dropbear rsa host key..." > /dev/kmsg
-    dropbearkey -t rsa -f /mnt/boot/dropbear/dropbear_rsa_host_key
+    dropbearkey -t rsa -f "$keys_path/dropbear_rsa_host_key"
 else
     echo "[dropbear][INFO] found 'dropbear_rsa_host_key'!" > /dev/kmsg
 fi
 
-echo "[dropbear][INFO] host key ECDSA: $(cat /mnt/boot/dropbear/dropbear_ecdsa_host_key)" > /dev/kmsg
-echo "[dropbear][INFO] host key Ed25519: $(cat /mnt/boot/dropbear/dropbear_ed25519_host_key)" > /dev/kmsg
-echo "[dropbear][INFO] host key RSA: $(cat /mnt/boot/dropbear/dropbear_rsa_host_key)" > /dev/kmsg
+echo "[dropbear][INFO] host key ECDSA: $(cat "$keys_path/dropbear_ecdsa_host_key.pub")" > /dev/kmsg
+echo "[dropbear][INFO] host key Ed25519: $(cat "$keys_path/dropbear_ed25519_host_key.pub")" > /dev/kmsg
+echo "[dropbear][INFO] host key RSA: $(cat "$keys_path/dropbear_rsa_host_key.pub")" > /dev/kmsg
 
-cp /mnt/boot/dropbear/dropbear_ecdsa_host_key /etc/dropbear/
-cp /mnt/boot/dropbear/dropbear_ed25519_host_key /etc/dropbear/
-cp /mnt/boot/dropbear/dropbear_rsa_host_key /etc/dropbear/
+cp "$keys_path/dropbear_ecdsa_host_key" /etc/dropbear/
+cp "$keys_path/dropbear_ed25519_host_key" /etc/dropbear/
+cp "$keys_path/dropbear_rsa_host_key" /etc/dropbear/
 
-if [[ -f /mnt/boot/dropbear/authorized_keys ]]; then
+if [[ -f "$keys_path/authorized_keys" ]]; then
     echo "[dropbear][INFO] found 'authorized_keys'!" > /dev/kmsg
 
-    cp /mnt/boot/dropbear/authorized_keys /root/.ssh/authorized_keys
+    cp "$keys_path/authorized_keys" /root/.ssh/authorized_keys
     chmod 600 /root/.ssh/authorized_keys
 else
     echo "[dropbear][ERROR] missing '/boot/dropbear/authorized_keys'!" > /dev/kmsg
