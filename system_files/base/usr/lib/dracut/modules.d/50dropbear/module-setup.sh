@@ -21,10 +21,13 @@ install() {
     systemctl -q --root "$initdir" enable dropbear-prepare-keys.service
     systemctl -q --root "$initdir" enable dropbear-ssh.service
 
+    mkdir -p -m 0700 "$initdir/root"
+    mkdir -p -m 0700 "$initdir/root/.ssh"
+
     # Add the command to unlock LUKS volumes to the bash history for easier access.
     echo systemd-tty-ask-password-agent >> "$initdir/root/.bash_history"
     chmod 600 "$initdir/root/.bash_history"
 
     inst_simple "${moddir}/motd" /etc/motd
-    inst_simple "${moddir}/profile" "/root/.profile"
+    inst_simple "${moddir}/profile" "$initdir/root/.profile"
 }
