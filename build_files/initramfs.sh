@@ -16,7 +16,6 @@ export DRACUT_NO_XATTR=1
   --reproducible \
   --xz \
   --verbose \
-  --omit "zfs" \
   --add ostree \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
