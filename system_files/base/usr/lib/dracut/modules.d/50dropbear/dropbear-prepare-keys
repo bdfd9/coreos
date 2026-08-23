@@ -3,14 +3,14 @@
 echo "[dropbear]: initialising dropbear keys..." > /dev/kmsg
 
 if [[ ! -b /dev/disk/by-label/boot ]]; then
-    echo "[dropbear]: ERROR /dev/disk/by-label/boot not found!" > /dev/kmsg
+    echo "[dropbear][ERROR] /dev/disk/by-label/boot not found!" > /dev/kmsg
     exit 1
 fi
 
 # Mount the boot partition (FCOS labels the boot partition as 'boot')
 mkdir -p /mnt/boot
 if ! mount -L boot /mnt/boot; then
-    echo "[dropbear]: ERROR failed to mount /boot" > /dev/kmsg
+    echo "[dropbear][ERROR] failed to mount /boot" > /dev/kmsg
     exit 1
 fi
 
@@ -20,18 +20,24 @@ mkdir -p /etc/dropbear
 mkdir -p /root/.ssh
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_ecdsa_host_key ]]; then
-    echo "Generating new Dropbear ecdsa host key..."
+    echo "[dropbear]: generating new Dropbear ecdsa host key..." > /dev/kmsg
     dropbearkey -t ecdsa -f /mnt/boot/dropbear/dropbear_ecdsa_host_key
+else
+    echo "[dropbear][INFO] found 'dropbear_ecdsa_host_key'!" > /dev/kmsg
 fi
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_ed25519_host_key ]]; then
-    echo "Generating new Dropbear ED25519 host key..."
+    echo "[dropbear]: generating new Dropbear ED25519 host key..." > /dev/kmsg
     dropbearkey -t ed25519 -f /mnt/boot/dropbear/dropbear_ed25519_host_key
+else
+    echo "[dropbear][INFO] found 'dropbear_ed25519_host_key'!" > /dev/kmsg
 fi
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_rsa_host_key ]]; then
-    echo "Generating new Dropbear ecdsa host key..."
+    echo "[dropbear]: generating new Dropbear ecdsa host key..." > /dev/kmsg
     dropbearkey -t rsa -f /mnt/boot/dropbear/dropbear_rsa_host_key
+else
+    echo "[dropbear][INFO] found 'dropbear_rsa_host_key'!" > /dev/kmsg
 fi
 
 cp /mnt/boot/dropbear/dropbear_ecdsa_host_key /etc/dropbear/
@@ -39,8 +45,10 @@ cp /mnt/boot/dropbear/dropbear_ed25519_host_key /etc/dropbear/
 cp /mnt/boot/dropbear/dropbear_rsa_host_key /etc/dropbear/
 
 if [ -f /mnt/boot/dropbear/authorized_keys ]; then
-    cp /mnt/boot/authorized_keys /root/.ssh/authorized_keys
+    cp /mnt/boot/dropbear/authorized_keys /root/.ssh/authorized_keys
     chmod 600 /root/.ssh/authorized_keys
+else
+    echo "[dropbear][ERROR] missing '/boot/dropbear/authorized_keys'!" > /dev/kmsg
 fi
 
 umount /mnt/boot
