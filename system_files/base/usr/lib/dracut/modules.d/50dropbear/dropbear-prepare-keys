@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "[dropbear]: initialising dropbear keys..." > /dev/kmsg
+echo "[dropbear][INFO]: initialising dropbear keys..." > /dev/kmsg
 
 if [[ ! -b /dev/disk/by-label/boot ]]; then
     echo "[dropbear][ERROR] /dev/disk/by-label/boot not found!" > /dev/kmsg
@@ -20,31 +20,37 @@ mkdir -p /etc/dropbear
 mkdir -p /root/.ssh
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_ecdsa_host_key ]]; then
-    echo "[dropbear]: generating new Dropbear ecdsa host key..." > /dev/kmsg
+    echo "[dropbear][INFO]: generating new Dropbear ecdsa host key..." > /dev/kmsg
     dropbearkey -t ecdsa -f /mnt/boot/dropbear/dropbear_ecdsa_host_key
 else
     echo "[dropbear][INFO] found 'dropbear_ecdsa_host_key'!" > /dev/kmsg
 fi
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_ed25519_host_key ]]; then
-    echo "[dropbear]: generating new Dropbear ED25519 host key..." > /dev/kmsg
+    echo "[dropbear][INFO]: generating new Dropbear ED25519 host key..." > /dev/kmsg
     dropbearkey -t ed25519 -f /mnt/boot/dropbear/dropbear_ed25519_host_key
 else
     echo "[dropbear][INFO] found 'dropbear_ed25519_host_key'!" > /dev/kmsg
 fi
 
 if [[ ! -f /mnt/boot/dropbear/dropbear_rsa_host_key ]]; then
-    echo "[dropbear]: generating new Dropbear ecdsa host key..." > /dev/kmsg
+    echo "[dropbear][INFO]: generating new Dropbear rsa host key..." > /dev/kmsg
     dropbearkey -t rsa -f /mnt/boot/dropbear/dropbear_rsa_host_key
 else
     echo "[dropbear][INFO] found 'dropbear_rsa_host_key'!" > /dev/kmsg
 fi
+
+echo "[dropbear][INFO] host key ECDSA: $(cat /mnt/boot/dropbear/dropbear_ecdsa_host_key)" > /dev/kmsg
+echo "[dropbear][INFO] host key Ed25519: $(cat /mnt/boot/dropbear/dropbear_ed25519_host_key)" > /dev/kmsg
+echo "[dropbear][INFO] host key RSA: $(cat /mnt/boot/dropbear/dropbear_rsa_host_key)" > /dev/kmsg
 
 cp /mnt/boot/dropbear/dropbear_ecdsa_host_key /etc/dropbear/
 cp /mnt/boot/dropbear/dropbear_ed25519_host_key /etc/dropbear/
 cp /mnt/boot/dropbear/dropbear_rsa_host_key /etc/dropbear/
 
 if [[ -f /mnt/boot/dropbear/authorized_keys ]]; then
+    echo "[dropbear][INFO] found 'authorized_keys'!" > /dev/kmsg
+
     cp /mnt/boot/dropbear/authorized_keys /root/.ssh/authorized_keys
     chmod 600 /root/.ssh/authorized_keys
 else
