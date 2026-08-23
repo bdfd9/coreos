@@ -8,6 +8,8 @@ KVER=$(ls /usr/lib/modules | head -n1)
 
 dnf5 -y install dropbear dracut-network systemd-networkd
 
+mkdir -p /var/tmp/
+
 depmod -a "$KVER"
 export DRACUT_NO_XATTR=1
 /usr/bin/dracut \
@@ -16,6 +18,7 @@ export DRACUT_NO_XATTR=1
   --reproducible \
   --xz \
   --verbose \
+  --omit "bluetooth" \
   --add ostree \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 

@@ -44,7 +44,6 @@ packages=(
     net-tools
     NetworkManager
     NetworkManager-adsl
-    NetworkManager-bluetooth
     NetworkManager-config-connectivity-fedora
     NetworkManager-libnm
     NetworkManager-openconnect
