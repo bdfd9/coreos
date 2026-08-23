@@ -25,7 +25,7 @@ install() {
     mkdir -p -m 0700 "$initdir/root/.ssh"
 
     # Add the command to unlock LUKS volumes to the bash history for easier access.
-    echo systemd-tty-ask-password-agent >> "$initdir/root/.bash_history"
+    echo "systemd-tty-ask-password-agent --watch" >> "$initdir/root/.bash_history"
     chmod 600 "$initdir/root/.bash_history"
 
     inst_simple "${moddir}/motd" /etc/motd
