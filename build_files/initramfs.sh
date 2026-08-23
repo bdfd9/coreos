@@ -16,7 +16,6 @@ export DRACUT_NO_XATTR=1
   --reproducible \
   --xz \
   --verbose \
-  --omit "qemu qemu-net zfs fido2 iscsi" \
   --add ostree \
   -f "/usr/lib/modules/$KVER/initramfs.img"
 
