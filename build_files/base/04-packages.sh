@@ -64,6 +64,7 @@ packages=(
     # Security / Authentication
     audispd-plugins
     audit
+    clevis
     firewalld
     git-credential-libsecret
     ksshaskpass

@@ -7,6 +7,6 @@ Before=cryptsetup.target
 WantedBy=sysinit.target
 
 [Service]
-ExecStart=/usr/bin/dropbear-start
+ExecStart=/usr/bin/dropbear-ssh
 Restart=on-failure
 RestartSec=60s
