@@ -26,5 +26,5 @@ install() {
     chmod 600 "$initdir/root/.bash_history"
 
     inst_simple "${moddir}/motd" /etc/motd
-    inst_simple "${moddir}/profile" "$initdir/root/.profile"
+    inst_simple "${moddir}/profile" "/root/.profile"
 }

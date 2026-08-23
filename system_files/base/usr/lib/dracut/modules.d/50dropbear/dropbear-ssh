@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "[dropbear]: starting dropbear SSH server..." > /dev/kmsg
-dropbear -E -F -s -j -k
+dropbear -E -F -s -j -k -p 2222
