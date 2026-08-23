@@ -6,7 +6,7 @@ set -ouex pipefail
 
 KVER=$(ls /usr/lib/modules | head -n1)
 
-dnf5 -y install dropbear dracut-network systemd-networkd
+dnf5 -y install dropbear dracut-network
 
 mkdir -p /var/tmp/
 

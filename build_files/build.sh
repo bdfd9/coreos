@@ -14,7 +14,7 @@ modules=(
     "hw/base/packages.sh"
     "base/08-firmware.sh"
     "base/10-services.sh"
-    # "sign.sh"
+    "sign.sh"
 )
 
 for mod in "${modules[@]}"; do
