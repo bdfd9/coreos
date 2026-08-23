@@ -33,7 +33,7 @@ find "/lib/modules/$KVER" -type f -name '*.ko.xz' -print0 | while IFS= read -r -
         sha512 "$SIGN_DIR/MOK.key" "$SIGN_DIR/MOK.pem" "$uncompressed" || true
     rm -f "$module"
 
-    if xz -z "$uncompressed"; then
+    if xz -z --check=crc32 --lzma2=dict=1MiB "$uncompressed"; then
         echo "Recompressed and signed $uncompressed -> ${uncompressed}.xz"
     else
         echo "Warning: failed to recompress $uncompressed"
