@@ -26,6 +26,4 @@ chmod 0600 "/usr/lib/modules/$KVER/initramfs.img"
 
 dnf5 -y remove dropbear dracut-network
 
-rm /etc/systemd/network/20-wired.network
-
 echo "::endgroup::"
