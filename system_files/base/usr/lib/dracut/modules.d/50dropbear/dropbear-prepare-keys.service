@@ -7,9 +7,9 @@ After=dev-disk-by\x2dlabel-boot.device
 
 [Install]
 WantedBy=dropbear-ssh.service
-WantedBy=initrd.target
+WantedBy=sysinit.target
 
 [Service]
 Type=oneshot
-ExecStart=/usr/sbin/dropbear-prepare-keys
+ExecStart=/usr/bin/dropbear-prepare-keys
 RemainAfterExit=yes

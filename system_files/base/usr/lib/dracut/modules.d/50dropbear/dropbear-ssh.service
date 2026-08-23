@@ -1,8 +1,12 @@
 [Unit]
-Description=Dropbear SSH server
+Description=Dropbear SSH server daemon
 DefaultDependencies=no
-Requires=local-fs.target cryptsetup-pre.target
-After=local-fs.target cryptsetup-pre.target
+Before=cryptsetup.target
+
+[Install]
+WantedBy=sysinit.target
 
 [Service]
-ExecStart=/usr/sbin/dropbear-start
+ExecStart=/usr/bin/dropbear-start
+Restart=on-failure
+RestartSec=60s
