@@ -44,7 +44,7 @@ cp /mnt/boot/dropbear/dropbear_ecdsa_host_key /etc/dropbear/
 cp /mnt/boot/dropbear/dropbear_ed25519_host_key /etc/dropbear/
 cp /mnt/boot/dropbear/dropbear_rsa_host_key /etc/dropbear/
 
-if [ -f /mnt/boot/dropbear/authorized_keys ]; then
+if [[ -f /mnt/boot/dropbear/authorized_keys ]]; then
     cp /mnt/boot/dropbear/authorized_keys /root/.ssh/authorized_keys
     chmod 600 /root/.ssh/authorized_keys
 else

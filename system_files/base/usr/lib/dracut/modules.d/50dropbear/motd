@@ -1,0 +1,8 @@
+
+Welcome to the early boot SSH environment! Start typing:
+
+    systemd-tty-ask-password-agent
+
+(or press the up arrow) to unlock your disks.
+
+This shell will terminate automatically a few seconds after the unlocking process has succeeded, and once the boot process has continued.
