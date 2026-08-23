@@ -4,3 +4,6 @@ Name=e*
 [Network]
 DHCP=ipv4
 IPv6AcceptRA=true
+
+[Link]
+RequiredForOnline=carrier

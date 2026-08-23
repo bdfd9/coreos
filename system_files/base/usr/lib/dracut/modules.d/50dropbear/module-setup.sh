@@ -5,7 +5,7 @@ check() {
 }
 
 depends() {
-    echo network systemd
+    echo systemd
 }
 
 install() {
