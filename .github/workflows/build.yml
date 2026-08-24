@@ -36,7 +36,7 @@ jobs:
       matrix:
         flavor: [""]
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
 
     permissions:
       contents: read
@@ -77,6 +77,14 @@ jobs:
       - name: List installed packages
         run: |
           apt list --installed
+
+      - name: Install fresh fuse-overlayfs
+        run: |
+            curl https://github.com/containers/fuse-overlayfs/releases/download/v1.17/fuse-overlayfs-x86_64 --output fuse-overlayfs
+            install -D -m 0755 fuse-overlayfs /usr/local/bin/fuse-overlayfs
+            rm fuse-overlayfs
+
+            fuse-overlayfs --version
 
       - name: Maximize build space
         uses: ublue-os/remove-unwanted-software@cc0becac701cf642c8f0a6613bbdaf5dc36b259e # v9
