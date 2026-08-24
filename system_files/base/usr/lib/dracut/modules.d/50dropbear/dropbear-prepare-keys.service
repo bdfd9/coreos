@@ -1,7 +1,7 @@
 [Unit]
 Description=Prepare Dropbear keys from /boot-storage
 DefaultDependencies=no
-Before=dropbear-ssh.service dev-disk-by\x2dlabel-root.device
+Before=dropbear-ssh.service systemd-cryptsetup@root.service
 Requires=dev-disk-by\x2dlabel-boot\x2dstorage.device
 After=dev-disk-by\x2dlabel-boot\x2dstorage.device
 

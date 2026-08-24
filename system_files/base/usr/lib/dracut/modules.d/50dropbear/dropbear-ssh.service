@@ -1,7 +1,7 @@
 [Unit]
 Description=Dropbear SSH server daemon
 DefaultDependencies=no
-Before=cryptsetup.target
+Before=systemd-cryptsetup@root.service
 
 [Install]
 WantedBy=sysinit.target
