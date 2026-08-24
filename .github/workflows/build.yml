@@ -82,7 +82,7 @@ jobs:
         run: |
             set -eoux pipefail
 
-            curl -o fuse-overlay -L https://github.com/containers/fuse-overlayfs/releases/download/v1.17/fuse-overlayfs-x86_64
+            curl -o fuse-overlayfs -L https://github.com/containers/fuse-overlayfs/releases/download/v1.17/fuse-overlayfs-x86_64
             install -D -m 0755 fuse-overlayfs /usr/local/bin/fuse-overlayfs
             rm fuse-overlayfs
 
