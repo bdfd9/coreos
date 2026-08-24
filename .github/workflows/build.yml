@@ -80,7 +80,9 @@ jobs:
 
       - name: Install fresh fuse-overlayfs
         run: |
-            curl https://github.com/containers/fuse-overlayfs/releases/download/v1.17/fuse-overlayfs-x86_64 --output fuse-overlayfs
+            set -eoux pipefail
+
+            curl -o fuse-overlay -L https://github.com/containers/fuse-overlayfs/releases/download/v1.17/fuse-overlayfs-x86_64
             install -D -m 0755 fuse-overlayfs /usr/local/bin/fuse-overlayfs
             rm fuse-overlayfs
 
@@ -100,9 +102,9 @@ jobs:
             echo "mnt_is_there=0" >>$GITHUB_OUTPUT
           fi
 
-      - name: Free Disk Space (Ubuntu)
-        if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
-        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
+      # - name: Free Disk Space (Ubuntu)
+      #   if: ${{ steps.check_mnt.outputs.mnt_is_there == '1' }}
+      #   uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be # v1.3.1
 
       - name: Mount BTRFS for podman storage
         uses: ublue-os/container-storage-action@main
